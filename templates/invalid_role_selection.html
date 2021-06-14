@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Disaster Response</title>
+</head>
+<body>
+    <h1>Role you have selected: {{role}} has already been taken. Please select a different role or a different team.</h1>
+    <form action = "/chat">
+        <div>
+            <label>Enter your team's id: </label>
+            <input type = 'text' name = 'team_id'>
+        </div>
+        <div style="margin-top: 15px;">
+            <label>Enter your role: </label>
+            <input style="margin-left: 31px;"type = 'text' name = 'role'>
+        </div>
+        <button style="margin-left: 150px; margin-top: 25px" type = 'submit'>Submit</button>
+    </form>
+    <div><h2>You may select team as 1, 2, 3, 4.....<br>
+        Choose your role as:<br> DS for Data Scientist<br>
+        PW for Public Works<br>
+        PIO for Public Information officer<br>
+        PH for Public Health
+    </h2></div>
+</body>
+</html>

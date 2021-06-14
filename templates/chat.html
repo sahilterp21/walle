@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Disaster Response</title>
+</head>
+<body style="background: #E0FFFF">
+
+    <h2>Dashboard for Role: {{role_display}} &nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp Team-id: {{team_id}}</h2>
+
+    <div style="height:500px; width:25%; float:left">
+        <div style = "height: 30px; float:top; background: #F0E68C"><h2><b>Game Notifications</b></h2></div>
+        <div id="news_feed" style = "overflow-y:auto; height: 150px; float:top; background: #FFFFE0"></div>
+        <div style = "height: 30px; float:top; background: #F0E68C; margin-top:10px"><h2><b>Messages</b></h2></div>
+        <div id="messages" style = "overflow-y:auto; height: 200px; background: #FFFFE0; ">
+            {% for message in messages %}<div>
+            <b>{{message.sender}}:</b>&nbsp{{message.message_text}}</div>
+            {% endfor %}
+        </div>
+        <div style = "background: #FFFFE0;">
+        <form id = 'message_input_form'>
+        <input id = 'message_input' type = "text" placeholder= "Enter your message here: " style="width:80%">
+        <button type=" submit" style="float:right"><b>Send</b></button>
+        </form>
+        </div>
+    </div>
+    <div style="height:450px; width:450px; margin-left: 400px; background: #FFFFE0; margin-top:40px"><h1>Map Area</h1>
+        <div style="height:100px; width:100px; background: #FFFFE0;margin-left: 470px;"><h1>Score</h1>
+    </div>
+        <div style="margin-top:20px; width: 650px;margin-left: 460px; background: #FFFFE0;"><h1>Message Formats:</h1>
+            <h4>message should be formatted as: @receiver message text<br>For example, <br>
+                to send a message to Data Scientist the format should be: "@DS Help me with today's predictions"<br>
+            if you want to send a message to everyone, the format would be: @all hello everyone!!!</h4>
+            </div>
+    </div>
+        
+</body>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/3.1.1/socket.io.min.js"></script>
+<script> const socket = io.connect("http://127.0.0.1:5000/");
+
+    socket.on('connect', function () {
+        socket.emit('join_role', {
+            team_id: "{{team_id}}",
+            role: "{{role}}"
+
+        });
+        let message_input = document.getElementById('message_input');
+        document.getElementById('message_input_form').onsubmit = function (e) {
+        e.preventDefault();
+        let message = message_input.value.trim();
+        if (message.length){
+        socket.emit('send_message',{
+        role: "{{role}}",
+        team_id: "{{team_id}}",
+        message: message
+        })
+        }
+        message_input.value = '';
+        message_input.focus();
+        }
+        });
+        window.onbeforeunload = function () {
+        socket.emit('leave_room', {
+            team_id: "{{ team_id }}",
+            role: "{{ role }}"
+        })
+    };
+
+    socket.on('receive_message', function (data) {
+    console.log(data)
+    const newNode = document.createElement('div')
+    newNode.innerHTML = `<b>${data.role}:</b> ${data.message}`;
+    document.getElementById('messages').appendChild(newNode);
+    });
+
+    socket.on('join_room_announcement', function (data) {
+    console.log(data)
+    const newNode = document.createElement('div')
+    newNode.innerHTML = `Welcome to the role: ${data.role}`;
+    document.getElementById('news_feed').appendChild(newNode);
+    console.log(data)
+    });
+
+
+</script>
+</html>
